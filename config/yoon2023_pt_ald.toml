@@ -1,0 +1,38 @@
+# Second example — a different process from the same group.
+#
+# Pt on alpha-Al2O3 powder in a rotary ALD reactor, reported in
+# Yoon et al., Langmuir 39 (2023) 4984, doi:10.1021/acs.langmuir.2c03465.
+# Different material, precursor, substrate and reactor from the HfO2 PEALD work.
+# The routine is unchanged; only the column names and ranges differ.
+#
+#   python -m dopt.select --config config/yoon2023_pt_ald.toml --n-add 6
+#
+# The screening pass varies four parameters about a common centre point, so its
+# 17 conditions support 9 of the 15 terms of a quadratic model in four factors.
+
+name = "Yoon 2023, Pt rotary ALD"
+conditions = "data/yoon2023_screening.csv"
+
+# Five levels per parameter reproduces the 5^4 grid the same paper explored.
+levels = 5
+round_to_integer = false
+
+[[parameters]]
+column = "process_temperature_C"
+min = 200
+max = 400
+
+[[parameters]]
+column = "stop_valve_time_s"
+min = 5
+max = 25
+
+[[parameters]]
+column = "MeCpPtMe3_pulse_time_s"
+min = 0.5
+max = 2.5
+
+[[parameters]]
+column = "O2_pulse_time_s"
+min = 5
+max = 25

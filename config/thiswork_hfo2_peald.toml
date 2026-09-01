@@ -1,0 +1,47 @@
+# Example configuration — the 42 OFAT experiments of this work.
+#
+# The routine needs only the process conditions. Measured responses (thickness,
+# GPC, refractive index) may be present in the file but are ignored.
+#
+#   python -m dopt.select --config config/thiswork_hfo2_peald.toml --n-add 15
+
+name = "This work, HfO2 PEALD"
+
+# CSV of the experiments already performed. One row per experiment.
+# Columns not listed under [[parameters]] are ignored.
+conditions = "data/ofat_clean.csv"
+
+# Candidate grid: levels per parameter. 7 levels in 5 parameters is 7^5 = 16807.
+levels = 7
+
+# Round the proposed conditions to whole numbers, which is what the tool accepts.
+# Set false to keep the grid values.
+round_to_integer = true
+
+# One block per process parameter that may be varied. min and max define the
+# candidate range and need not match the range already explored; here they are
+# the ranges of Table 2 of the manuscript.
+[[parameters]]
+column = "Plasma_Power_W"
+min = 100
+max = 300
+
+[[parameters]]
+column = "Cycles"
+min = 5
+max = 150
+
+[[parameters]]
+column = "Chuck_T_C"
+min = 100
+max = 250
+
+[[parameters]]
+column = "O2_Flow_sccm"
+min = 10
+max = 70
+
+[[parameters]]
+column = "Oxidant_Dose_s"
+min = 20
+max = 60
