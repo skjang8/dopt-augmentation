@@ -1,0 +1,60 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "dopt-augmentation: sequential D-optimal augmentation of an existing experimental record"
+type: software
+version: 1.0.0
+date-released: 2026-09-01
+doi: 10.5281/zenodo.22234202
+license: MIT
+repository-code: "https://github.com/skjang8/dopt-augmentation"
+abstract: >-
+  Sequential D-optimal selection that proposes the next experiments for a record
+  whose conditions are known. It reads no measured response, so it runs on any
+  process, and the whole set of additions can be fixed before the first of them
+  is performed. Includes the process conditions and thickness measurements of
+  the accompanying HfO2 PEALD study.
+keywords:
+  - design of experiments
+  - D-optimal design
+  - one-factor-at-a-time
+  - atomic layer deposition
+  - plasma-enhanced atomic layer deposition
+  - hafnium oxide
+  - machine learning
+  - thin film thickness
+authors:
+  - family-names: Choi
+    given-names: Boyun
+  - family-names: Jang
+    given-names: Sung Kyu
+    orcid: "https://orcid.org/0000-0003-0610-0662"
+  - family-names: Lee
+    given-names: Seunghwan
+  - family-names: Lee
+    given-names: Jinhyoung
+  - family-names: Ko
+    given-names: Minkyung
+  - family-names: Cho
+    given-names: Donghyun
+  - family-names: Kim
+    given-names: Seongho
+  - family-names: Go
+    given-names: Eunseo
+  - family-names: Byun
+    given-names: Sooji
+  - family-names: Choi
+    given-names: Seongil
+  - family-names: Lim
+    given-names: Geon
+  - family-names: Kang
+    given-names: Hongjae
+  - family-names: Choi
+    given-names: Min Sup
+  - family-names: Kim
+    given-names: Taesung
+  - family-names: Kim
+    given-names: Hyeongkeun
+  - family-names: Jeon
+    given-names: Nari
+  - family-names: Kim
+    given-names: Hyeong-U
