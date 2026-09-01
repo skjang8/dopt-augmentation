@@ -1,0 +1,37 @@
+{
+  "title": "dopt-augmentation: sequential D-optimal augmentation of an existing experimental record",
+  "upload_type": "software",
+  "description": "<p>Data and code for <i>D-Optimal Augmentation of OFAT Datasets for Machine Learning-Based Thickness Prediction in HfO<sub>2</sub> PEALD</i>.</p><p>The routine proposes the next experiments for a record whose conditions are known. It reads no measured response, so it runs on any process, and the whole set of additions can be fixed before the first of them is performed. After each addition it reports the rank of the quadratic model matrix, log<sub>10</sub> det(X'X), the condition number and the mean absolute feature correlation.</p><p>Included are the 42 one-factor-at-a-time and 15 D-optimal process conditions of the study with their thickness measurements, the order in which the 15 were selected, and a second worked example on a different material, precursor, substrate and reactor.</p><p>The code is released under the MIT licence and the data files under CC BY 4.0.</p>",
+  "license": "MIT",
+  "access_right": "open",
+  "creators": [
+    {"name": "Choi, Boyun"},
+    {"name": "Jang, Sung Kyu"},
+    {"name": "Lee, Seunghwan"},
+    {"name": "Lee, Jinhyoung"},
+    {"name": "Ko, Minkyung"},
+    {"name": "Cho, Donghyun"},
+    {"name": "Kim, Seongho"},
+    {"name": "Go, Eunseo"},
+    {"name": "Byun, Sooji"},
+    {"name": "Choi, Seongil"},
+    {"name": "Lim, Geon"},
+    {"name": "Kang, Hongjae"},
+    {"name": "Choi, Min Sup"},
+    {"name": "Kim, Taesung"},
+    {"name": "Kim, Hyeongkeun"},
+    {"name": "Jeon, Nari"},
+    {"name": "Kim, Hyeong-U"}
+  ],
+  "keywords": [
+    "design of experiments",
+    "D-optimal design",
+    "one-factor-at-a-time",
+    "atomic layer deposition",
+    "plasma-enhanced atomic layer deposition",
+    "hafnium oxide",
+    "machine learning",
+    "thin film thickness"
+  ],
+  "language": "eng"
+}
