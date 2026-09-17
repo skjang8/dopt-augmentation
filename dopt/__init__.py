@@ -11,4 +11,4 @@ from .design import (FEATURES, n_terms, model_matrix, standardize,
 
 __all__ = ["FEATURES", "n_terms", "model_matrix", "standardize",
            "rank", "logdet", "kappa", "mean_abs_r", "metrics", "aliased_terms"]
-__version__ = "1.0.0"
+__version__ = "1.1.0"

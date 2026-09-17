@@ -4,12 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dopt-augment"
-version = "1.0.0"
+version = "1.1.0"
 description = "Sequential D-optimal augmentation of an existing experimental record"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
 dependencies = ["numpy>=2.0", "pandas>=2.2"]
 
+[project.optional-dependencies]
+cv = [
+    "scipy>=1.18.0",
+    "scikit-learn>=1.9.0",
+    "xgboost>=3.4.1",
+    "joblib>=1.5.3",
+    "matplotlib>=3.11.1",
+]
+
 [tool.setuptools]
-packages = ["dopt"]
+packages = ["dopt", "cv"]
