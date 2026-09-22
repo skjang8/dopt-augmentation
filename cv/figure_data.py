@@ -34,7 +34,7 @@ OUT_DEF = RESULTS / "figure_data"
 
 MODEL_ORDER = ["Ridge", "Random Forest", "XGBoost", "GPR"]
 METRICS = ["R2", "RMSE", "MAE"]
-PLOT_SEED = 42          # the seed whose out-of-fold predictions Figure 4 draws
+PLOT_SEED = 48          # the seed whose out-of-fold predictions Figure 4 draws
 N_OFAT_MAX = 42
 ENDPOINTS = {0: "OFAT", 15: "Augmented"}
 

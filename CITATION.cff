@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 title: "dopt-augmentation: sequential D-optimal augmentation of an existing experimental record"
 type: software
 version: 1.1.0
-date-released: 2026-09-17
+date-released: 2026-09-22
 doi: 10.5281/zenodo.22234202
 license: MIT
 repository-code: "https://github.com/skjang8/dopt-augmentation"

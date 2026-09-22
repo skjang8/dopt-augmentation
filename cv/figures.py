@@ -1,7 +1,7 @@
 """Draw the cross-validation figures into `figures/`.
 
-    python -m cv.figures                 all five
-    python -m cv.figures fig3 figR5      a selection
+    python -m cv.figures                 all four
+    python -m cv.figures fig3 figR4      a selection
 
 fig3    Figure 3: the leave-one-condition-out R2 and RMSE trajectories as the
         42 one-factor-at-a-time wafers accumulate and the 15 D-optimal wafers
@@ -13,9 +13,6 @@ figR3   leave-one-out against leave-one-condition-out cross-validation, before
 figR4   the same-test-set comparison: for every held-out condition, one model
         trained on the remaining one-factor-at-a-time wafers and one trained on
         those plus the D-optimal wafers, both scoring the same wafers.
-figR5   the excluded T2 wafer position: its offset from the four retained
-        readings, the effect on the within-wafer spread, and the
-        leave-one-condition-out R2 for both targets.
 
 The figures read the results in `results/cv/` and write 300 dpi PNGs.  Run
 `python -m cv.pipeline`, `python -m cv.bootstrap` and `python -m cv.figure_data`
@@ -51,7 +48,7 @@ MODEL_COLORS = {"Ridge": "#4C72B0", "Random Forest": "#55A868",
 COLOR_OFAT, COLOR_COMBINED, COLOR_DOE = "#4C72B0", "#55A868", "#C44E52"
 FEATURES = ["Plasma_Power_W", "Cycles", "Chuck_T_C", "O2_Flow_sccm", "Oxidant_Dose_s"]
 RETAINED = ["T1", "T3", "T4", "T5"]
-PLOT_SEED = 42
+PLOT_SEED = 48
 N_OFAT, N_TOTAL = 42, 57
 N_COND_OFAT, N_COND_AUG = 24, 39
 
@@ -128,7 +125,7 @@ def fig3():
 
     ax_r2.axhline(0.7, color="gray", lw=0.5, ls=":", alpha=0.6)
     ax_r2.axhline(0.0, color="gray", lw=0.4, alpha=0.4)
-    ax_r2.set_ylabel("R² (LOCO CV)")
+    ax_r2.set_ylabel("R²")
     ax_r2.set_ylim(max(R2_FLOOR, np.floor(r2.q25.min() * 20) / 20),
                    np.ceil(r2.q75.max() * 20) / 20 + 0.05)
     ax_r2.legend(loc="upper left", fontsize=LEGEND_SIZE, frameon=False, ncol=2)
@@ -222,9 +219,9 @@ def fig4():
 
     for ax, y_true, y_pred, color, title in [
         (ax_a, y_ofat, yp_before, COLOR_OFAT,
-         f"OFAT-only, LOCO CV (n = {len(y_ofat)}, {N_COND_OFAT} conditions)"),
+         f"OFAT-only (n = {len(y_ofat)}, {N_COND_OFAT} unique conditions)"),
         (ax_b, y_all, yp_after, COLOR_COMBINED,
-         f"Augmented, LOCO CV (n = {len(y_all)}, {N_COND_AUG} conditions)"),
+         f"Augmented (n = {len(y_all)}, {N_COND_AUG} unique conditions)"),
     ]:
         r2, rmse, mae = _parity_metrics(y_true, y_pred)
         ax.scatter(y_true, y_pred, c=color, s=32, alpha=0.75,
@@ -499,124 +496,7 @@ def figR4():
     _save(fig, "FigureR4")
 
 
-# ── Figure R5 ───────────────────────────────────────────────────────────────
-BASELINE = dict(Plasma_Power_W=20, Chuck_T_C=250, O2_Flow_sccm=50, Oxidant_Dose_s=60)
-BARS_R5 = [("OFAT", "Thickness_mean"), ("OFAT", "Thickness_5pos"),
-           ("Augmented", "Thickness_mean"), ("Augmented", "Thickness_5pos")]
-STYLE_R5 = {("OFAT", "Thickness_mean"):      dict(alpha=0.35, hatch=""),
-            ("OFAT", "Thickness_5pos"):      dict(alpha=0.35, hatch="///"),
-            ("Augmented", "Thickness_mean"): dict(alpha=0.95, hatch=""),
-            ("Augmented", "Thickness_5pos"): dict(alpha=0.95, hatch="///")}
-
-
-def _positions():
-    """The 57 wafers with all five readings, plus the derived spreads."""
-    m = pd.read_csv(_require(DATA / "thickness_positions.csv"))
-    four = m[RETAINED].to_numpy(float)
-    t2 = m["T2"].to_numpy(float)
-    m["mean4"] = four.mean(axis=1)
-    m["sd4"] = m[RETAINED].std(axis=1, ddof=1)
-    m["mean5"] = (four.sum(axis=1) + t2) / 5
-    m["sd5"] = np.std(np.column_stack([four, t2]), axis=1, ddof=1)
-    m["dT2"] = m["T2"] - m["mean4"]
-    m["baseline"] = np.logical_and.reduce([m[c] == v for c, v in BASELINE.items()])
-    return m
-
-
-def figR5():
-    _style(11)
-    d = _positions()
-
-    five = pd.read_csv(_require(RESULTS / "metrics_fivepos.csv"))
-    five = five[five.cv == "LOCO"]
-    parts, names = [five], ["metrics_fivepos.csv"]
-    # The five-position file holds only the five-position target; the
-    # four-position reference it is compared against lives in the reference
-    # file, whose LOCO rows are the same 42- and 57-wafer fits on the
-    # four-position mean.  Panel (c) therefore reads both.
-    if set(five.target.unique()) == {"Thickness_5pos"}:
-        four = pd.read_csv(_require(RESULTS / "metrics_loocv_ref.csv"))
-        four = four[(four.cv == "LOCO") & (four.target == "Thickness_mean")]
-        if four.empty:
-            sys.exit("no LOCO / Thickness_mean rows in metrics_loocv_ref.csv")
-        parts.append(four)
-        names.append("metrics_loocv_ref.csv")
-    r = pd.concat(parts, ignore_index=True)
-    val = r.groupby(["target", "subset", "model"])["R2"].median().reset_index()
-    print(f"  panel (c): {' + '.join(names)}; "
-          f"seeds per target {sorted(r.groupby('target')['seed'].nunique().unique())}")
-
-    fig, (ax_a, ax_b, ax_c) = plt.subplots(1, 3, figsize=(14.5, 4.6),
-                                           constrained_layout=True)
-
-    # (a) the T2 offset against deposition cycles
-    for mask, c, lab in (
-            (d.baseline, COLOR_OFAT, f"baseline series (n = {int(d.baseline.sum())})"),
-            (~d.baseline, COLOR_DOE, f"other conditions (n = {int((~d.baseline).sum())})")):
-        ax_a.scatter(d.loc[mask, "Cycles"], d.loc[mask, "dT2"], s=38, c=c,
-                     edgecolors="black", linewidths=0.35, alpha=0.8, label=lab)
-    ax_a.axhline(0, color="dimgray", lw=1.0, ls="-")
-    ax_a.axhline(d["dT2"].mean(), color="dimgray", lw=0.9, ls="--")
-    ax_a.text(ax_a.get_xlim()[1], d["dT2"].mean(), f"  mean {d['dT2'].mean():+.2f} nm",
-              fontsize=7.5, color="dimgray", va="center", ha="left")
-    ax_a.set_xlabel("Deposition cycles")
-    ax_a.set_ylabel("T2 − mean(T1, T3, T4, T5)  (nm)")
-    ax_a.grid(True, lw=0.4, alpha=0.3)
-    ax_a.legend(loc="best", fontsize=8, frameon=False)
-
-    # (b) within-wafer spread, four against five positions
-    smax = float(max(d.sd4.max(), d.sd5.max())) * 1.08
-    for mask, c in ((d.baseline, COLOR_OFAT), (~d.baseline, COLOR_DOE)):
-        ax_b.scatter(d.loc[mask, "sd5"], d.loc[mask, "sd4"], s=38, c=c,
-                     edgecolors="black", linewidths=0.35, alpha=0.8)
-    ax_b.plot([0, smax], [0, smax], "k--", lw=0.8, alpha=0.5)
-    ax_b.set_xlim(0, smax)
-    ax_b.set_ylim(0, smax)
-    ax_b.set_box_aspect(1)
-    ax_b.set_xlabel("SD of five positions (nm)")
-    ax_b.set_ylabel("SD of four retained positions (nm)")
-    ax_b.grid(True, lw=0.4, alpha=0.3)
-    ax_b.text(0.04, 0.96, f"median SD  4-pos {d.sd4.median():.2f} nm\n"
-                          f"            5-pos {d.sd5.median():.2f} nm",
-              transform=ax_b.transAxes, va="top", ha="left", fontsize=7.5,
-              family="monospace",
-              bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.9,
-                        edgecolor="lightgray"))
-
-    # (c) LOCO R2 for the four- and the five-position target
-    x = np.arange(len(MODEL_ORDER))
-    w = 0.20
-    for i, (subset, target) in enumerate(BARS_R5):
-        vals = [float(val[(val.subset == subset) & (val.target == target)
-                          & (val.model == m)]["R2"].iloc[0]) for m in MODEL_ORDER]
-        st = STYLE_R5[(subset, target)]
-        ax_c.bar(x + (i - 1.5) * w, vals, w,
-                 color=[MODEL_COLORS[m] for m in MODEL_ORDER],
-                 alpha=st["alpha"], hatch=st["hatch"], edgecolor="black", linewidth=0.5)
-        for xi, v in zip(x + (i - 1.5) * w, vals):
-            ax_c.text(xi, v + 0.012, f"{v:.2f}", ha="center", va="bottom",
-                      fontsize=6.5, rotation=90)
-    ax_c.set_xticks(x)
-    ax_c.set_xticklabels(MODEL_ORDER, fontsize=9)
-    ax_c.set_ylabel("R² (LOCO CV)")
-    ax_c.set_ylim(0, 1.0)
-    ax_c.grid(True, axis="y", lw=0.4, alpha=0.35)
-    ax_c.set_axisbelow(True)
-    ax_c.legend(handles=[
-        Patch(facecolor="0.55", edgecolor="black", linewidth=0.5,
-              alpha=STYLE_R5[b]["alpha"], hatch=STYLE_R5[b]["hatch"],
-              label=f"{'OFAT-only' if b[0] == 'OFAT' else 'Augmented'}, "
-                    f"{'4-position' if b[1] == 'Thickness_mean' else '5-position'} target")
-        for b in BARS_R5], loc="upper left", fontsize=7, frameon=False, ncol=2)
-
-    for ax, letter in zip((ax_a, ax_b, ax_c), ("a", "b", "c")):
-        ax.text(-0.13, 1.03, letter, transform=ax.transAxes, fontsize=16,
-                fontweight="bold", ha="left", va="bottom")
-
-    _save(fig, "FigureR5")
-
-
-FIGURES = {"fig3": fig3, "fig4": fig4, "figR3": figR3, "figR4": figR4, "figR5": figR5}
+FIGURES = {"fig3": fig3, "fig4": fig4, "figR3": figR3, "figR4": figR4}
 
 
 def main():

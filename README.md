@@ -129,7 +129,7 @@ differences.
     cv/                      the cross-validation, bootstrap and figure code
     results/cv/              metrics, out-of-fold predictions and intervals
     results/cv/figure_data/  the reduced inputs the figures read
-    figures/                 the five figures drawn from them
+    figures/                 the four figures drawn from them
 
 ## Data
 
